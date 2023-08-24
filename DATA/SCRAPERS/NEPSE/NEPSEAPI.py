@@ -44,6 +44,17 @@ class NEPSE_API:
         self.lastProven = time.time()
         self.securities = []
 
+
+    def getCSSWASM(self):
+        print("GETTING CSS WASM ")
+        if os.path.isfile('./css.wasm'):
+            return 
+        res = requests.get('https://www.nepalstock.com/assets/prod/css.wasm')
+        data = open('./css.wasm', 'w')
+        data.write(res.text)
+        data.close()
+        return 
+    
     def tokenGenerate(self, e, accessToken, refreshToken):
         t = self.t
         accessToken = accessToken[:t.exec("cdx", [e["salt1"], e["salt2"], e["salt3"], e["salt4"], e["salt5"]])] + \

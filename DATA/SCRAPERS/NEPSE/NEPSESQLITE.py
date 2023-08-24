@@ -6,6 +6,7 @@ import datetime
 import os
 from dataclasses import dataclass
 from enum import Enum
+from NEPSEAPI import NEPSE_API
 
 
 class SQLITE_DTYPE(Enum):
