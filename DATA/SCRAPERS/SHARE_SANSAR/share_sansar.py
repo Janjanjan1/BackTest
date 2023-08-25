@@ -178,5 +178,5 @@ def get_company_floorsheet(company):
 
 if __name__ == "__main__":
     companies = get_companies()
-    with mp.Pool(8) as p:
+    with mp.Pool(16) as p:
         p.map(get_company_floorsheet, companies)
