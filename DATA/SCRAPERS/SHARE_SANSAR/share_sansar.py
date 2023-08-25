@@ -3,6 +3,8 @@ import requests
 import pandas as pd
 import time
 from datetime import datetime, timedelta
+import multiprocessing as mp
+import bs4
 
 CONTENT_SIZE = 500
 DATA_PATH = "DATA"
@@ -59,6 +61,12 @@ get_floorsheet = lambda params: get_with_headers(
 parse_floorsheet_json = lambda json: dict(
     map(lambda json_items: (json_items["transaction"], json_items), json["data"])
 )
+
+
+def get_companies():
+    r = get_curried("https://www.sharesansar.com/floorsheet")
+    soup = bs4.BeautifulSoup(r.content, "lxml")
+    return [i["value"] for i in soup.find_all("option") if i["value"] != ""]
 
 
 def get_all_floorsheet_pages(params):
@@ -153,17 +161,21 @@ def get_floorsheets_date_range(company, from_date="2015-12-31", to_date=datetime
     while to_date.strftime("%Y-%m-%d") != from_date.strftime("%Y-%m-%d"):
         params = set_date(params, to_date.strftime("%Y-%m-%d"))
         temp = get_all_floorsheet_pages(params)
-        print(f'Date: {to_date.strftime("%Y-%m-%d")} | Length: {len(temp)} ')
+        print(
+            f'Date: {to_date.strftime("%Y-%m-%d")} | Length: {len(temp)} | Comapny: {company} '
+        )
         floorsheet_all |= temp
         to_date -= delta
     return floorsheet_all
 
 
-def main():
-    company = "22"
+def get_company_floorsheet(company):
     r = get_floorsheets_date_range(company)
     pd.to_pickle(r, f"{DATA_PATH}/{company}.pb")
     return
 
 
-main()
+if __name__ == "__main__":
+    companies = get_companies()
+    with mp.Pool(8) as p:
+        p.map(get_company_floorsheet, companies)
