@@ -161,7 +161,7 @@ def get_floorsheets_date_range(company, from_date="2015-12-31", to_date=datetime
 
 def main():
     company = "22"
-    r = get_floorsheets_date_range(company, "2023-08-23")
+    r = get_floorsheets_date_range(company)
     pd.to_pickle(r, f"{DATA_PATH}/{company}.pb")
     return
 
