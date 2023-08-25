@@ -1,9 +1,11 @@
 import toolz
 import requests
 import pandas as pd
+import time
 from datetime import datetime, timedelta
 
 CONTENT_SIZE = 500
+DATA_PATH = "DATA"
 headers = {
     "authority": "www.sharesansar.com",
     "accept": "application/json, text/javascript, */*; q=0.01",
@@ -21,6 +23,22 @@ headers = {
 }
 
 
+def retry(
+    func,
+    r_level,
+    *args,
+    **kw,
+):
+    if r_level > 150:
+        raise Exception("Failed To Retry")
+    try:
+        res = func(*args, **kw)
+    except Exception as E:
+        time.sleep(r_level * 1)
+        return retry(func, r_level + 1, *args, **kw)
+    return res
+
+
 ## set company
 def set_company(params={}, company=""):
     params["company"] = company
@@ -32,6 +50,7 @@ def set_date(params={}, date=""):
     return params
 
 
+# get_with_timeout =
 get_curried = toolz.curry(requests.get)
 get_with_headers = get_curried(headers=headers)
 get_floorsheet = lambda params: get_with_headers(
@@ -56,6 +75,9 @@ def get_all_floorsheet_pages(params):
         start += CONTENT_SIZE
         draw += 1
         end = json_data["recordsTotal"]
+    pd.to_pickle(
+        all_floorsheet_pages, f"{DATA_PATH}/{params['company']}_{params['date']}.pb"
+    )
     return all_floorsheet_pages
 
 
@@ -139,9 +161,8 @@ def get_floorsheets_date_range(company, from_date="2015-12-31", to_date=datetime
 
 def main():
     company = "22"
-    r = get_floorsheets_date_range(company)
-    df = pd.DataFrame(r)
-    df.to_excel(f"{company}.xlsx")
+    r = get_floorsheets_date_range(company, "2023-08-23")
+    pd.to_pickle(r, f"{DATA_PATH}/{company}.pb")
     return
 
 
