@@ -83,9 +83,10 @@ def get_all_floorsheet_pages(params):
         start += CONTENT_SIZE
         draw += 1
         end = json_data["recordsTotal"]
-    pd.to_pickle(
-        all_floorsheet_pages, f"{DATA_PATH}/{params['company']}_{params['date']}.pb"
-    )
+    if len(all_floorsheet_pages) != 0:
+        pd.to_pickle(
+            all_floorsheet_pages, f"{DATA_PATH}/{params['company']}_{params['date']}.pb"
+        )
     return all_floorsheet_pages
 
 
@@ -162,7 +163,7 @@ def get_floorsheets_date_range(company, from_date="2015-12-31", to_date=datetime
         params = set_date(params, to_date.strftime("%Y-%m-%d"))
         temp = get_all_floorsheet_pages(params)
         print(
-            f'Date: {to_date.strftime("%Y-%m-%d")} | Length: {len(temp)} | Comapny: {company} '
+            f'Date: {to_date.strftime("%Y-%m-%d")} | Length: {len(temp)} | Comapny: {company} '  # noqa: E501
         )
         floorsheet_all |= temp
         to_date -= delta
