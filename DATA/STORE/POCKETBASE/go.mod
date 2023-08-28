@@ -1,0 +1,3 @@
+module BACKTEST_POCKETBASE
+
+go 1.19
