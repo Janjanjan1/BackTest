@@ -45,7 +45,7 @@ class NEPSE_API:
         self.securities = []
 
 
-    def getCSSWASM(self):
+    def get_csswasm(self):
         print("GETTING CSS WASM ")
         if os.path.isfile('./css.wasm'):
             return 
@@ -55,7 +55,7 @@ class NEPSE_API:
         data.close()
         return 
     
-    def tokenGenerate(self, e, accessToken, refreshToken):
+    def token_generate(self, e, accessToken, refreshToken):
         t = self.t
         accessToken = accessToken[:t.exec("cdx", [e["salt1"], e["salt2"], e["salt3"], e["salt4"], e["salt5"]])] + \
             accessToken[t.exec("cdx", [e["salt1"], e["salt2"], e["salt3"], e["salt4"], e["salt5"]]) + 1: t.exec("rdx", [e["salt1"], e["salt2"], e["salt4"], e["salt3"], e["salt5"]])] + \
@@ -90,7 +90,7 @@ class NEPSE_API:
         self.setTokens(h)
         return
 
-    def setTokens(self, h):
+    def set_tokens(self, h):
         self.accessToken, self.refreshToken = self.tokenGenerate(
             h, h['accessToken'], h['refreshToken'])
         self.headers['authorization'] = f"Salter {self.accessToken}"
